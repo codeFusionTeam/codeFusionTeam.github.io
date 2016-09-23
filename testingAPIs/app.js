@@ -66,7 +66,7 @@ function initMap() {
             // Check to make sure infowindow is not already opened on this marker
             if (infowindow.marker != marker) {
                 infowindow.marker = marker;
-                infowindow.setContent('<div>' + marker.title + '</div><br><div></div>');
+                infowindow.setContent('<div>' + marker.title + '</div><br><iframe width="560" height="315" src="https://www.youtube.com/embed/FLnzmihIg-Q?list=PLgGbWId6zgaXFR4SW_3qJ55cxmEqRNIzx" frameborder="0" allowfullscreen></iframe>');
                 infowindow.open(map, marker);
                 // ensure marker property is cleared if infowindow is closed
                 infowindow.addListener('closeclick', function() {

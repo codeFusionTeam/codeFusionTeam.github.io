@@ -5,3 +5,7 @@ If you'd like to create a new repository, please select the button titled "Uploa
 By default, GitHub will look for an index.html file in your folder if you just go to "codefusionteam.github.io/FOLDER" and you do not specify a file to go to.
 
 For instance, to see my live code, you would go to "codefusionteam.github.io/testingAPIs"
+
+# Editing other people's code
+
+If you want to edit someone elses code, ask them before you edit it, or just copy the files and edit your own version.

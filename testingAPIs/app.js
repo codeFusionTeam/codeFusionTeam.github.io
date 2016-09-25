@@ -1,20 +1,19 @@
+/* global google */ // to fix Cloud9's error messages that "google is not defined"
+
 var map;
-var locations = [
-    {
+var locations = [{
     title: 'mhs',
     location: {
         lat: 35.747443,
         lng: -83.978086
     }
-}, 
-{
+}, {
     title: 'other place',
     location: {
         lat: 30.747443,
         lng: -83.978086
     }
-}, 
-{
+}, {
     title: '3rd place',
     location: {
         lat: 35.747443,
@@ -23,12 +22,18 @@ var locations = [
 }];
 
 var markers = [];
+var areas = [];
 
+// nothing is currently being drawn
 var polygon = null;
+
 
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: 35.845626, lng: -86.390778},
+        center: {
+            lat: 35.845626,
+            lng: -86.390778
+        },
         zoom: 7
     });
 
@@ -37,23 +42,21 @@ function initMap() {
         map: map,
         title: 'MHS'
     });
-    var infowindow = new google.maps.InfoWindow({
-        content: "Maryville High School"
-    })
 
-    var largeInfowindow = new google.maps.InfoWindow();
+    var infowindow = new google.maps.InfoWindow();
     var bounds = new google.maps.LatLngBounds();
-    
+
+
     var drawingManager = new google.maps.drawing.DrawingManager({
         drawingMode: google.maps.drawing.OverlayType.POLYGON,
         drawingControl: true,
         drawingControlOptions: {
-            position: google.maps.ControlPosition.TOP_LEFT,
+            position: google.maps.ControlPosition.TOP_CENTER,
             drawingModes: [
-                google.maps.drawing.OverlayType.POLYGON    
+                google.maps.drawing.OverlayType.POLYGON // other types are circle, rectangle, line, or just placing markers 
             ]
         }
-    })
+    });
 
     for (var i = 0; i < locations.length; i++) {
         //get position from location array
@@ -61,7 +64,7 @@ function initMap() {
         var title = locations[i].title;
 
         //create marker per location
-        var marker = new google.maps.Marker({
+        marker = new google.maps.Marker({
             map: map,
             position: position,
             title: title,
@@ -72,57 +75,58 @@ function initMap() {
         bounds.extend(marker.position);
 
         marker.addListener('click', function() {
-            populateInfoWindow(this, infowindow);
-        })
-
-        function populateInfoWindow(marker, infowindow) {
-            // Check to make sure infowindow is not already opened on this marker
-            if (infowindow.marker != marker) {
-                infowindow.marker = marker;
-                infowindow.setContent('<div>' + marker.title + '</div><br><iframe width="560" height="315" src="https://www.youtube.com/embed/FLnzmihIg-Q?list=PLgGbWId6zgaXFR4SW_3qJ55cxmEqRNIzx" frameborder="0" allowfullscreen></iframe>');
-                infowindow.open(map, marker);
-                // ensure marker property is cleared if infowindow is closed
-                infowindow.addListener('closeclick', function() {
-                    infowindow.setMarker(null); // What does this do?
-                });
-            }
-
-            map.fitBounds(bounds); // fitBounds just zooms to a spot where all markers can be seen
-
-
-        }
+            populateInfoWindow(this, infowindow, bounds);
+        });
 
         document.getElementById("show-listings").addEventListener('click', showListings);
         document.getElementById("hide-listings").addEventListener('click', hideListings);
-    
+
         document.getElementById("toggle-drawing").addEventListener('click', function() {
             toggleDrawing(drawingManager);
-        })
-        
+        });
+
         drawingManager.addListener('overlaycomplete', function(event) {
-            if (polygon) {
-                // polygon.setMap(null);
-                // hideListings();
-            }
-            
+
             drawingManager.setDrawingMode(null);
-            
+
             polygon = event.overlay;
             polygon.setEditable(true);
-            
+
             searchWithinPolygon();
-            
+            calcArea();
+
             polygon.getPath().addListener('set_at', searchWithinPolygon);
-            polygon.getPath().addListener('insert_at', searchWithinPolygon);  
-        })
+            polygon.getPath().addListener('insert_at', searchWithinPolygon);
+            polygon.getPath().addListener('set_at', calcArea);
+            polygon.getPath().addListener('insert_at', calcArea);
+            
+        });
     }
-    
-    function toggleDrawing(drawingManager) {
-        if (drawingManager.map) {
-            drawingManager.setMap(null);
-        } else {
-            drawingManager.setMap(map);
-        }
+
+
+}
+
+function populateInfoWindow(marker, infowindow, bounds) {
+    // Check to make sure infowindow is not already opened on this marker
+    if (infowindow.marker != marker) {
+        infowindow.marker = marker;
+        infowindow.setContent('<div>' + marker.title + '</div><br><iframe width="560" height="315" src="https://www.youtube.com/embed/FLnzmihIg-Q?list=PLgGbWId6zgaXFR4SW_3qJ55cxmEqRNIzx" frameborder="0" allowfullscreen></iframe>');
+        infowindow.open(map, marker);
+        // ensure marker property is cleared if infowindow is closed
+        infowindow.addListener('closeclick', function() {
+            infowindow.marker = null; // allows you to close and reopen infowindows more than once
+        });
+    }
+
+    map.fitBounds(bounds); // fitBounds just zooms to a spot where all markers can be seen
+}
+
+function toggleDrawing(drawingManager) {
+    if (drawingManager.map) {
+        drawingManager.setMap(null);
+    }
+    else {
+        drawingManager.setMap(map);
     }
 }
 
@@ -130,7 +134,8 @@ function searchWithinPolygon() {
     for (var i = 0; i < markers.length; i++) {
         if (google.maps.geometry.poly.containsLocation(markers[i].position, polygon)) {
             markers[i].setMap(map);
-        } else {
+        }
+        else {
             markers[i].setMap(null);
         }
     }
@@ -141,7 +146,7 @@ function showListings() {
 
     for (var i = 0; i < markers.length; i++) {
         markers[i].setMap(map);
-        bounds.extend(markers[i].position)
+        bounds.extend(markers[i].position);
     }
     map.fitBounds(bounds);
 }
@@ -149,5 +154,19 @@ function showListings() {
 function hideListings() {
     for (var i = 0; i < markers.length; i++) {
         markers[i].setMap(null);
+    }
+}
+
+function calcArea() {
+    var area = google.maps.geometry.spherical.computeArea(polygon.getPath());
+    
+    areas.push(area);
+
+    // eventListener fires off a ton of times
+    // this is supposed to see if the last area is the same as the current one so that the area is only logged once
+    if (area != areas[areas.indexOf(area)-1]) { 
+        console.log(area);
+    } else {
+        areas.splice(areas.indexOf(area), 1);
     }
 }

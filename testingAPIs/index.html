@@ -21,12 +21,18 @@
           <span class="text">Draw a shape to search within it for locations</span>
           <input type="button" id="toggle-drawing" value="Drawing Tools" />
         </div>
+        
+        <hr>
+        
+        <input type="text" id="zoom-to-area-text" placeholder = "Enter your favorite area!" />
+        <input id="zoom-to-area" type="button" value="zoom" />
+        
       </div>
     </div>
     
     <div id="map"></div>
     
     <script type="text/javascript" src="app.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?libraries=geometry,drawing&key=AIzaSyCMEZiWzR_Oe22ml8Rl1-BNzdEG5pCJO6s&callback=initMap" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?libraries=places,geometry,drawing&key=AIzaSyCMEZiWzR_Oe22ml8Rl1-BNzdEG5pCJO6s&callback=initMap" async defer></script>
   </body>
 </html>

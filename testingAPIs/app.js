@@ -84,6 +84,10 @@ function initMap() {
         document.getElementById("toggle-drawing").addEventListener('click', function() {
             toggleDrawing(drawingManager);
         });
+        
+        document.getElementById("zoom-to-area").addEventListener("click", function() {
+            zoomToArea();
+        });
 
         drawingManager.addListener('overlaycomplete', function(event) {
 
@@ -102,8 +106,9 @@ function initMap() {
             
         });
     }
-
-
+    var zoomAutoComplete = new google.maps.places.Autocomplete(
+        document.getElementById("zoom-to-area-text")
+    );
 }
 
 function populateInfoWindow(marker, infowindow, bounds) {
@@ -170,3 +175,27 @@ function calcArea() {
         areas.splice(areas.indexOf(area), 1);
     }
 }
+
+function zoomToArea() {
+    var geocoder = new google.maps.Geocoder();
+    
+    var address = document.getElementById("zoom-to-area-text").value;
+    
+    if (address == "") {
+        window.alert("You must enter an area or address.");
+    } else {
+        geocoder.geocode(
+            {address: address,
+            componentRestrictions: {locality: "Tennessee"}
+            }, function(results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    map.setCenter(results[0].geometry.location);
+                    map.setZoom(20);
+                } else {
+                    window.alert("We could not find that location - try entering a more specific place.");
+                }
+            }
+        );
+    }
+}
+

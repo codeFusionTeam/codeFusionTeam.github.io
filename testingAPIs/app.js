@@ -170,7 +170,7 @@ function calcArea() {
     // eventListener fires off a ton of times
     // this is supposed to see if the last area is the same as the current one so that the area is only logged once
     if (area != areas[areas.indexOf(area)-1]) { 
-        alert("The area is " + area.floor() + " square ft");
+        alert("The area is " + area + " square ft");
     } else {
         areas.splice(areas.indexOf(area), 1);
     }

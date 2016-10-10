@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Blank Google Map</title>
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        #map {
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <!-- Instructions for the API -->
+    <!-- Note: this script must precede the API script -->
+    <script>
+        var map;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { // lat and lng of center of TN
+                    lat: 35.845626,
+                    lng: -86.390778
+                },
+                zoom: 7 // this is arbitrary and can be changed
+            });
+        }
+    </script>
+
+    <!-- Google Maps API script -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCMEZiWzR_Oe22ml8Rl1-BNzdEG5pCJO6s&callback=initMap"
+    async defer></script>
+</body>
+</html>
